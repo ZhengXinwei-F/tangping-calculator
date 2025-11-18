@@ -469,7 +469,10 @@
   }
   
   function formatMoney(amount) {
-    return amount.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    // 确保保留两位小数，不取整
+    const num = Number(amount);
+    if (isNaN(num)) return '0.00';
+    return num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
   
   // 添加专项扣除行
