@@ -81,6 +81,7 @@
   }
   #specialDeductionTable {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-size: 13px;
   }
   #specialDeductionTable tbody tr {
     border-bottom: 1px solid #e2e8f0;
@@ -91,12 +92,22 @@
   #specialDeductionTable tbody tr:last-child {
     border-bottom: none;
   }
-  #specialDeductionTable {
-    font-size: 13px;
-  }
   #specialDeductionTable th,
   #specialDeductionTable td {
     padding: 8px 6px;
+  }
+  #specialDeductionTable th:first-child,
+  #specialDeductionTable td:first-child {
+    width: 40%;
+    min-width: 120px;
+  }
+  #specialDeductionTable th:nth-child(2),
+  #specialDeductionTable td:nth-child(2) {
+    width: 35%;
+  }
+  #specialDeductionTable th:nth-child(3),
+  #specialDeductionTable td:nth-child(3) {
+    width: 25%;
   }
   .results {
     display: grid;
@@ -146,6 +157,12 @@
   }
   tbody tr:hover {
     background: #f0f4f8;
+  }
+  /* 桌面端月份列背景色 */
+  .result-card table tbody td:first-child {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 700;
   }
   td {
     padding: 10px 12px;
@@ -221,59 +238,79 @@
       grid-template-columns: 1fr;
       gap: 16px;
     }
-    table {
-      font-size: 12px;
-    }
-    th, td {
-      padding: 8px 6px;
-    }
-    /* 专项扣除表格移动端优化 */
-    #specialDeductionTable {
+    /* 结果表格移动端优化 */
+    .result-card table {
       font-size: 11px;
       display: block;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }
-    #specialDeductionTable thead,
-    #specialDeductionTable tbody,
-    #specialDeductionTable tr {
+    .result-card table thead {
+      display: none;
+    }
+    .result-card table tbody,
+    .result-card table tr {
       display: block;
     }
-    #specialDeductionTable thead tr {
-      position: absolute;
-      top: -9999px;
-      left: -9999px;
-    }
-    #specialDeductionTable tbody tr {
+    .result-card table tbody tr {
       border: 1px solid #e2e8f0;
       border-radius: 8px;
       margin-bottom: 8px;
-      padding: 8px;
+      padding: 10px;
       background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    #specialDeductionTable tbody td {
+    .result-card table tbody td {
       display: block;
       border: none;
       padding: 6px 0;
       text-align: left;
       position: relative;
-      padding-left: 30%;
+      padding-left: 35%;
+      font-size: 12px;
     }
-    #specialDeductionTable tbody td:before {
+    .result-card table tbody td:before {
       content: attr(data-label);
       position: absolute;
       left: 0;
-      width: 28%;
+      width: 33%;
       font-weight: 600;
       color: #4a5568;
       font-size: 11px;
     }
-    #specialDeductionTable tbody td:last-child {
-      text-align: center;
+    .result-card table tbody td:first-child {
+      font-weight: 700;
+      font-size: 13px;
+      color: #667eea;
+      padding-bottom: 8px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid #e2e8f0;
       padding-left: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin: -10px -10px 8px -10px;
+      width: calc(100% + 20px);
     }
-    #specialDeductionTable tbody td:last-child:before {
+    .result-card table tbody td:first-child:before {
       display: none;
+    }
+    .result-card table tbody td strong {
+      color: #667eea;
+      font-size: 13px;
+    }
+    /* 专项扣除表格移动端优化 - 保持表格样式，只调整字体和间距 */
+    #specialDeductionTable {
+      font-size: 11px;
+    }
+    #specialDeductionTable th,
+    #specialDeductionTable td {
+      padding: 6px 4px;
+      font-size: 11px;
+    }
+    #specialDeductionTable th {
+      font-size: 10px;
     }
     #addSpecialDeduction {
       width: 100%;
@@ -306,6 +343,11 @@
       padding: 6px 4px;
     }
     #specialDeductionTable {
+      font-size: 10px;
+    }
+    #specialDeductionTable th,
+    #specialDeductionTable td {
+      padding: 4px 2px;
       font-size: 10px;
     }
   }
@@ -680,15 +722,15 @@
         
         // 月薪行
         html += `<tr>
-          <td>${month}月</td>
-          <td>${formatMoney(currentMonthSalary)}</td>
-          <td>${formatMoney(monthlyFiveInsurance)}</td>
-          <td>${formatMoney(monthlyHousing)}</td>
-          <td>${formatMoney(salaryTax)} (${taxRateText})</td>
-          <td>${formatMoney(cumulativeTaxable)}</td>
-          <td><strong>${formatMoney(monthNet)}</strong></td>
-          <td>${formatMoney(monthlyMedicalAccount)}</td>
-          <td>${formatMoney(monthlyHousingAccount)}</td>
+          <td data-label="月份">${month}月</td>
+          <td data-label="月薪">${formatMoney(currentMonthSalary)}</td>
+          <td data-label="五险">${formatMoney(monthlyFiveInsurance)}</td>
+          <td data-label="一金">${formatMoney(monthlyHousing)}</td>
+          <td data-label="个税(税率)">${formatMoney(salaryTax)} (${taxRateText})</td>
+          <td data-label="累计计税数额">${formatMoney(cumulativeTaxable)}</td>
+          <td data-label="实发工资"><strong>${formatMoney(monthNet)}</strong></td>
+          <td data-label="医保账户">${formatMoney(monthlyMedicalAccount)}</td>
+          <td data-label="公积金账户">${formatMoney(monthlyHousingAccount)}</td>
         </tr>`;
         
         // 年终奖单独一行（如果有）
@@ -705,15 +747,15 @@
           }
           
           html += `<tr style="background: #fff5e6;">
-            <td>${month}月-年终奖</td>
-            <td>${formatMoney(monthBonus)}</td>
-            <td>-</td>
-            <td>-</td>
-            <td>${formatMoney(bonusTax)} (${bonusTaxRateText})</td>
-            <td>-</td>
-            <td><strong>${formatMoney(monthBonus - bonusTax)}</strong></td>
-            <td>-</td>
-            <td>-</td>
+            <td data-label="月份">${month}月-年终奖</td>
+            <td data-label="年终奖">${formatMoney(monthBonus)}</td>
+            <td data-label="五险">-</td>
+            <td data-label="一金">-</td>
+            <td data-label="个税(税率)">${formatMoney(bonusTax)} (${bonusTaxRateText})</td>
+            <td data-label="累计计税数额">-</td>
+            <td data-label="实发工资"><strong>${formatMoney(monthBonus - bonusTax)}</strong></td>
+            <td data-label="医保账户">-</td>
+            <td data-label="公积金账户">-</td>
           </tr>`;
         }
       }
