@@ -195,6 +195,18 @@
     padding: 12px;
     border-radius: 8px;
   }
+  .summary-item.highlight {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+    transform: scale(1.05);
+    border: 2px solid #fbbf24;
+  }
+  .summary-item.highlight strong {
+    color: white;
+  }
+  .summary-item.highlight span {
+    color: white;
+  }
   .summary-item strong {
     display: block;
     font-size: 12px;
@@ -795,11 +807,11 @@
         <strong>年度公积金账户总额</strong>
         <span>${formatMoney(annualHousing)}</span>
       </div>
-      <div class="summary-item">
+      <div class="summary-item highlight">
         <strong>最优方案</strong>
         <span>${combinedNetIncome > separateNetIncome ? '合并计税' : '分开计税'}</span>
       </div>
-      <div class="summary-item">
+      <div class="summary-item highlight">
         <strong>最优方案节省</strong>
         <span>${formatMoney(Math.abs(combinedNetIncome - separateNetIncome))}</span>
       </div>
