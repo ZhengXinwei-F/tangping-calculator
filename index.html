@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>本金+利率 -> 每年花多少钱能用多少年（模拟器）</title>
+<title>财务计算工具集</title>
 <style>
   * { box-sizing: border-box; }
   body {
@@ -12,497 +12,86 @@
     padding: 20px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: #333;
   }
   .container {
-    max-width: 1400px;
+    max-width: 600px;
     margin: 0 auto;
     background: white;
     border-radius: 16px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    padding: 32px;
+    padding: 48px;
+    text-align: center;
   }
-  h2 {
-    margin: 0 0 24px 0;
-    font-size: 28px;
+  h1 {
+    margin: 0 0 32px 0;
+    font-size: 32px;
     font-weight: 700;
     color: #2d3748;
-    text-align: center;
-    padding-bottom: 16px;
+    padding-bottom: 24px;
     border-bottom: 3px solid #667eea;
   }
-  .controls {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
+  .card {
+    display: block;
     padding: 24px;
+    margin: 16px 0;
     background: #f7fafc;
     border-radius: 12px;
-  }
-  label {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-weight: 500;
-    color: #4a5568;
-    font-size: 14px;
-  }
-  input, select {
-    font-size: 14px;
-    padding: 10px 12px;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    transition: all 0.2s;
-    background: white;
-  }
-  input:focus, select:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  }
-  button {
-    font-size: 15px;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  #run {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-  }
-  #run:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-  }
-  #export {
-    background: #48bb78;
-    color: white;
-  }
-  #export:hover {
-    background: #38a169;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
-  }
-  .small {
-    grid-column: 1 / -1;
-    font-size: 12px;
-    color: #718096;
-    padding: 12px;
-    background: #edf2f7;
-    border-radius: 6px;
-    margin-top: 8px;
-  }
-  #result {
-    margin-top: 24px;
-  }
-  #chart {
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    margin-bottom: 24px;
-    width: 100%;
-    height: 400px;
-    background: white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  }
-  #tableWrap {
-    overflow-x: auto;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  }
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    background: white;
-    font-size: 14px;
-  }
-  thead {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-  }
-  th {
-    padding: 16px;
-    text-align: right;
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-  }
-  th:first-child {
-    text-align: left;
-  }
-  tbody tr {
-    transition: all 0.2s;
-    border-bottom: 1px solid #e2e8f0;
-  }
-  tbody tr:hover {
-    background: #f7fafc;
-    transform: scale(1.01);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-  tbody tr:nth-child(even) {
-    background: #f9fafb;
-  }
-  tbody tr:nth-child(even):hover {
-    background: #f0f4f8;
-  }
-  td {
-    padding: 14px 16px;
-    text-align: right;
-    color: #4a5568;
-  }
-  td:first-child {
-    text-align: left;
-    font-weight: 600;
+    text-decoration: none;
     color: #2d3748;
+    transition: all 0.3s;
+    border: 2px solid transparent;
   }
-  td:last-child {
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    border-color: #667eea;
+    background: white;
+  }
+  .card h2 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
     color: #667eea;
-    font-weight: 600;
+  }
+  .card p {
+    margin: 0;
+    color: #718096;
+    font-size: 14px;
   }
   @media (max-width: 768px) {
     body {
       padding: 10px;
     }
     .container {
-      padding: 16px;
-      border-radius: 12px;
+      padding: 32px 24px;
     }
-    h2 {
+    h1 {
+      font-size: 24px;
+      margin-bottom: 24px;
+    }
+    .card {
+      padding: 20px;
+    }
+    .card h2 {
       font-size: 20px;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-    }
-    .controls {
-      grid-template-columns: 1fr;
-      gap: 12px;
-      padding: 16px;
-    }
-    label {
-      font-size: 13px;
-    }
-    input, select {
-      font-size: 16px; /* 防止iOS自动缩放 */
-      padding: 12px;
-    }
-    button {
-      font-size: 14px;
-      padding: 14px 20px;
-      width: 100%;
-    }
-    #chart {
-      height: 300px;
-      margin-bottom: 16px;
-    }
-    table {
-      font-size: 13px;
-    }
-    th, td {
-      padding: 10px 8px;
-    }
-    .small {
-      font-size: 11px;
-      padding: 10px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    body {
-      padding: 8px;
-    }
-    .container {
-      padding: 12px;
-    }
-    h2 {
-      font-size: 18px;
-      margin-bottom: 12px;
-    }
-    .controls {
-      padding: 12px;
-      gap: 10px;
-    }
-    #chart {
-      height: 250px;
-    }
-    table {
-      font-size: 12px;
-    }
-    th, td {
-      padding: 8px 6px;
     }
   }
 </style>
 </head>
 <body>
   <div class="container">
-    <h2>💰 躺平模拟器 — 每年花多少钱能用多少年 </h2>
-
-    <div class="controls">
-      <label>本金 (元)：<input id="principal" type="number" value="3000000" /></label>
-      <label>年利率 (%)：<input id="rate" type="number" step="0.01" value="1.9" /></label>
-      <label>其他收入 (元/年)：<input id="otherIncome" type="number" value="0" /></label>
-      <label>提款频率：<select id="freq"><option value="1">每年</option></select></label>
-      <label>最小提款 (元)：<input id="minWithdraw" type="number" value="100000" /></label>
-      <label>最大提款 (元)：<input id="maxWithdraw" type="number" value="200000" /></label>
-      <label>步长 (元)：<input id="stepWithdraw" type="number" value="10000" /></label>
-      <div style="display: flex; gap: 12px; align-items: flex-end;">
-        <button id="run">🚀 生成表格 & 图表</button>
-        <button id="export">📥 导出 CSV</button>
-      </div>
-      <div class="small">💡 说明：每年年初/年末提款方式会影响结果，这里默认"年末提款"。复利按年计算。其他收入在计算利息后、扣除提款前加入。</div>
-    </div>
-
-    <div id="result">
-      <canvas id="chart"></canvas>
-      <div id="tableWrap"></div>
-    </div>
+    <h1>💰 财务计算工具集</h1>
+    <a href="simulator.html" class="card">
+      <h2>💰 躺平模拟器</h2>
+      <p>本金+利率 → 每年花多少钱能用多少年</p>
+    </a>
+    <a href="salary.html" class="card">
+      <h2>💼 工资计算器</h2>
+      <p>五险一金 & 年终奖个税计算</p>
+    </a>
   </div>
-
-<script>
-(function(){
-  const $ = id => document.getElementById(id);
-  const canvas = $('chart');
-  const ctx = canvas.getContext('2d');
-
-  function simulateYears(principal, annualRate, annualWithdrawal, otherIncome=0, maxYears=200){
-    // 年末提款：本金先增值（利息），然后加上其他收入，最后扣除提款
-    let p = principal;
-    const r = annualRate/100;
-    for(let year=1; year<=maxYears; year++){
-      p = p * (1 + r);  // 先计算复利
-      p = p + otherIncome;  // 加上其他收入
-      p = p - annualWithdrawal;  // 然后扣除提款
-      if(p <= 0) return year;
-    }
-    return Infinity; // 超过 maxYears 仍未耗尽，视作无限（或非常长）
-  }
-
-  function generateTable(principal, rate, otherIncome, minW, maxW, stepW){
-    const rows = [];
-    for(let w = Number(minW); w <= Number(maxW); w += Number(stepW)){
-      const years = simulateYears(principal, rate, w, otherIncome, 1000);
-      rows.push({withdraw: w, years});
-    }
-    return rows;
-  }
-
-  function drawChart(rows){
-    // 检测移动端
-    const isMobile = window.innerWidth <= 768;
-    
-    // 简单折线图：x = withdraw, y = years (capped)
-    const padding = isMobile ? 45 : 50; // 移动端减少padding
-    const w = canvas.clientWidth || 800;
-    const h = canvas.clientHeight || 400;
-    // 使用高DPI渲染，但避免过度缩放
-    const dpr = Math.min(devicePixelRatio, 2); // 限制最大2倍
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0,0,w,h);
-    
-    // 启用抗锯齿
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0,0,w,h);
-
-    const validRows = rows.map(r => ({...r, years:isFinite(r.years)?r.years:1000}));
-    const xs = validRows.map(r => r.withdraw);
-    const ys = validRows.map(r => r.years);
-    const xMin = Math.min(...xs);
-    const xMax = Math.max(...xs);
-    const yMax = Math.max(...ys);
-
-    // axes with gradient
-    ctx.strokeStyle = '#667eea'; ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(padding, padding);
-    ctx.lineTo(padding, h - padding);
-    ctx.lineTo(w - padding, h - padding);
-    ctx.stroke();
-
-    // X轴标签
-    const axisFontSize = isMobile ? '11px' : '13px';
-    ctx.fillStyle = '#2d3748'; ctx.font = 'bold ' + axisFontSize + ' sans-serif'; ctx.textAlign='center';
-    ctx.fillText('每年提款金额 (元)', w / 2, h - 5);
-    
-    // ticks and labels
-    const fontSize = isMobile ? '11px' : '13px';
-    ctx.fillStyle = '#4a5568'; ctx.font = fontSize + ' sans-serif'; ctx.textAlign='center';
-    const xTicks = 5; // 改为5个间隔，共6个点
-    for(let i=0;i<=xTicks;i++){
-      const x = padding + (w-2*padding)*(i/xTicks);
-      const val = Math.round(xMin + (xMax-xMin)*(i/xTicks));
-      ctx.fillText(val.toLocaleString(), x, h - padding + 18);
-      ctx.beginPath(); ctx.moveTo(x, h - padding); ctx.lineTo(x, h - padding - 6); ctx.stroke();
-    }
-    
-    // Y轴标签
-    ctx.save();
-    ctx.translate(isMobile ? 12 : 15, h / 2);
-    ctx.rotate(-Math.PI / 2);
-    ctx.fillStyle = '#2d3748'; ctx.font = 'bold ' + axisFontSize + ' sans-serif'; ctx.textAlign='center';
-    ctx.fillText('可持续年数 (年)', 0, 0);
-    ctx.restore();
-    
-    ctx.textAlign='right';
-    const yTicks = 5; // 改为5个间隔，共6个点
-    for(let i=0;i<=yTicks;i++){
-      const y = h - padding - (h-2*padding)*(i/yTicks);
-      const val = Math.round((yMax)*(i/yTicks));
-      ctx.fillText(val===1000?'≥1000':val, padding-8, y+4);
-      ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(padding+6, y); ctx.stroke();
-    }
-
-    // plot line with gradient
-    const gradient = ctx.createLinearGradient(padding, padding, w - padding, h - padding);
-    gradient.addColorStop(0, '#667eea');
-    gradient.addColorStop(1, '#764ba2');
-    ctx.strokeStyle = gradient; ctx.lineWidth = 3; ctx.beginPath();
-    validRows.forEach((pt,i)=>{
-      const x = padding + (w-2*padding)*((pt.withdraw - xMin)/(xMax - xMin || 1));
-      const y = h - padding - (h-2*padding)*(pt.years / (yMax || 1));
-      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-    });
-    ctx.stroke();
-
-    // points with shadow
-    validRows.forEach((pt, index)=>{
-      const x = padding + (w-2*padding)*((pt.withdraw - xMin)/(xMax - xMin || 1));
-      const y = h - padding - (h-2*padding)*(pt.years / (yMax || 1));
-      
-      // 绘制点
-      ctx.shadowColor = 'rgba(102, 126, 234, 0.3)';
-      ctx.shadowBlur = 6;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 2;
-      ctx.fillStyle = '#667eea';
-      ctx.beginPath(); 
-      ctx.arc(x, y, 3.5, 0, Math.PI*2); 
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    });
-    
-    // 智能显示标签：只显示关键点，避免重叠
-    // 移动端显示更少的标签
-    const maxLabels = isMobile ? 5 : 8;
-    const labelInterval = Math.max(1, Math.floor(validRows.length / maxLabels));
-    const labelPositions = [];
-    
-    validRows.forEach((pt, index)=>{
-      if (index % labelInterval !== 0 && index !== validRows.length - 1) return; // 只显示部分标签
-      
-      const x = padding + (w-2*padding)*((pt.withdraw - xMin)/(xMax - xMin || 1));
-      const y = h - padding - (h-2*padding)*(pt.years / (yMax || 1));
-      
-      // 检查是否与已有标签重叠
-      const minDistance = 40;
-      const tooClose = labelPositions.some(pos => 
-        Math.abs(pos.x - x) < minDistance && Math.abs(pos.y - y) < minDistance
-      );
-      if (tooClose) return;
-      
-      labelPositions.push({x, y});
-      
-      // 显示年数标签
-      const yearText = isFinite(pt.years) ? pt.years.toFixed(0) : '≥1000';
-      const fullText = yearText + '年';
-      
-      // 移动端使用更小的字体
-      ctx.font = isMobile ? '10px sans-serif' : '12px sans-serif';
-      const textWidth = ctx.measureText(fullText).width;
-      const labelPadding = isMobile ? 4 : 6;
-      const labelHeight = isMobile ? 16 : 18;
-      
-      // 智能决定标签位置：优先上方，如果太靠上则下方
-      let labelY = y - 12;
-      let labelOffsetY = 0;
-      if (y < 60) {
-        labelY = y + 12;
-        labelOffsetY = labelHeight;
-      }
-      
-      // 标签背景（更清晰的白色背景）
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.98)';
-      ctx.strokeStyle = '#667eea';
-      ctx.lineWidth = 1.5;
-      const rectX = x - textWidth/2 - labelPadding;
-      const rectY = labelY - labelHeight/2;
-      
-      // 绘制圆角矩形背景
-      const radius = 4;
-      ctx.beginPath();
-      ctx.moveTo(rectX + radius, rectY);
-      ctx.lineTo(rectX + textWidth + labelPadding*2 - radius, rectY);
-      ctx.quadraticCurveTo(rectX + textWidth + labelPadding*2, rectY, rectX + textWidth + labelPadding*2, rectY + radius);
-      ctx.lineTo(rectX + textWidth + labelPadding*2, rectY + labelHeight - radius);
-      ctx.quadraticCurveTo(rectX + textWidth + labelPadding*2, rectY + labelHeight, rectX + textWidth + labelPadding*2 - radius, rectY + labelHeight);
-      ctx.lineTo(rectX + radius, rectY + labelHeight);
-      ctx.quadraticCurveTo(rectX, rectY + labelHeight, rectX, rectY + labelHeight - radius);
-      ctx.lineTo(rectX, rectY + radius);
-      ctx.quadraticCurveTo(rectX, rectY, rectX + radius, rectY);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-      
-      // 标签文字
-      ctx.fillStyle = '#667eea';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.font = isMobile ? 'bold 10px sans-serif' : 'bold 11px sans-serif';
-      ctx.fillText(fullText, x, labelY);
-    });
-  }
-
-  function renderTable(rows){
-    const wrap = $('tableWrap');
-    if(rows.length===0){ wrap.innerHTML=''; return; }
-    let html = '<table><thead><tr><th>每年花 (元)</th><th>可持续年数</th></tr></thead><tbody>';
-    rows.forEach(r=>{
-      const yrs = isFinite(r.years) ? r.years.toLocaleString() : '≥1000';
-      const withdraw = Number(r.withdraw).toLocaleString();
-      html += `<tr><td>${withdraw}</td><td>${yrs}</td></tr>`;
-    });
-    html += '</tbody></table>';
-    wrap.innerHTML = html;
-  }
-
-  $('run').addEventListener('click', ()=>{
-    const p = Number($('principal').value) || 0;
-    const r = Number($('rate').value) || 0;
-    const otherIncome = Number($('otherIncome').value) || 0;
-    const minW = Number($('minWithdraw').value) || 0;
-    const maxW = Number($('maxWithdraw').value) || 0;
-    const step = Number($('stepWithdraw').value) || 1;
-    if(p<=0){ alert('请输入正数本金'); return; }
-    if(minW<0 || maxW<0 || step<=0){ alert('请输入有效的提款区间'); return; }
-    const rows = generateTable(p, r, otherIncome, minW, maxW, step);
-    renderTable(rows);
-    drawChart(rows);
-    // store last for export
-    canvas._lastRows = rows;
-  });
-
-  $('export').addEventListener('click', ()=>{
-    const rows = canvas._lastRows || [];
-    if(!rows.length){ alert('请先生成表格'); return; }
-    let csv = 'withdraw,years\n';
-    rows.forEach(r => csv += `${r.withdraw},${isFinite(r.years)?r.years:">=1000"}\n`);
-    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'withdraw_years.csv'; document.body.appendChild(a); a.click();
-    a.remove(); URL.revokeObjectURL(url);
-  });
-
-  // initial draw
-  setTimeout(()=>{ $('run').click(); }, 200);
-})();
-</script>
 </body>
 </html>

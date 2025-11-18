@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>工资计算器 - 五险一金 & 年终奖</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+  }
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    padding: 32px;
+  }
+  h2 {
+    margin: 0 0 24px 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #2d3748;
+    text-align: center;
+    padding-bottom: 16px;
+    border-bottom: 3px solid #667eea;
+  }
+  .input-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 24px;
+    background: #f7fafc;
+    border-radius: 12px;
+  }
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-weight: 500;
+    color: #4a5568;
+    font-size: 14px;
+  }
+  input, select {
+    font-size: 14px;
+    padding: 10px 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    transition: all 0.2s;
+    background: white;
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+  button {
+    font-size: 15px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    grid-column: 1 / -1;
+    margin-top: 8px;
+  }
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+  #specialDeductionTable {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  #specialDeductionTable tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+  }
+  #specialDeductionTable tbody tr:hover {
+    background: #f7fafc;
+  }
+  #specialDeductionTable tbody tr:last-child {
+    border-bottom: none;
+  }
+  .results {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 24px;
+  }
+  .result-card {
+    background: #f7fafc;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .result-card h3 {
+    margin: 0 0 16px 0;
+    font-size: 18px;
+    color: #2d3748;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #667eea;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    background: white;
+    font-size: 13px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+  th {
+    padding: 12px;
+    text-align: right;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  th:first-child {
+    text-align: left;
+  }
+  tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+  }
+  tbody tr:nth-child(even) {
+    background: #f9fafb;
+  }
+  tbody tr:hover {
+    background: #f0f4f8;
+  }
+  td {
+    padding: 10px 12px;
+    text-align: right;
+    color: #4a5568;
+  }
+  td:first-child {
+    text-align: left;
+    font-weight: 600;
+    color: #2d3748;
+  }
+  .summary {
+    margin-top: 24px;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    color: white;
+  }
+  .summary h3 {
+    margin: 0 0 16px 0;
+    font-size: 20px;
+  }
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .summary-item {
+    background: rgba(255,255,255,0.1);
+    padding: 12px;
+    border-radius: 8px;
+  }
+  .summary-item strong {
+    display: block;
+    font-size: 12px;
+    opacity: 0.9;
+    margin-bottom: 4px;
+  }
+  .summary-item span {
+    font-size: 20px;
+    font-weight: 700;
+  }
+  @media (max-width: 768px) {
+    body {
+      padding: 10px;
+    }
+    .container {
+      padding: 16px;
+    }
+    h2 {
+      font-size: 20px;
+    }
+    .input-section {
+      grid-template-columns: 1fr;
+      padding: 16px;
+    }
+    .results {
+      grid-template-columns: 1fr;
+    }
+    input, select {
+      font-size: 16px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h2>💰 工资计算器 - 五险一金 & 年终奖</h2>
+
+    <div class="input-section">
+      <label>月薪 (元)：<input id="monthlySalary" type="number" value="10000" /></label>
+      <label>年终奖 (元)：<input id="bonus" type="number" value="30000" /></label>
+      <label>年终奖到账月份：<select id="bonusMonth"><option value="12">12月</option><option value="1">1月</option><option value="2">2月</option><option value="3">3月</option><option value="4">4月</option><option value="5">5月</option><option value="6">6月</option><option value="7">7月</option><option value="8">8月</option><option value="9">9月</option><option value="10">10月</option><option value="11">11月</option></select></label>
+      <div style="grid-column: 1 / -1;">
+        <label style="margin-bottom: 8px;">专项扣除：</label>
+        <table id="specialDeductionTable" style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden;">
+          <thead>
+            <tr style="background: #667eea; color: white;">
+              <th style="padding: 10px; text-align: left; font-size: 13px;">类型</th>
+              <th style="padding: 10px; text-align: left; font-size: 13px;">金额</th>
+              <th style="padding: 10px; text-align: center; font-size: 13px; width: 80px;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="specialDeductionBody">
+            <!-- 动态添加行 -->
+          </tbody>
+        </table>
+        <button type="button" id="addSpecialDeduction" style="margin-top: 8px; padding: 8px 16px; background: #48bb78; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px;">+ 添加专项扣除</button>
+      </div>
+      <label>五险一金基数 (元，留空则使用月薪)：<input id="insuranceBase" type="number" /></label>
+      <label>五险基数上限 (元)（默认：杭州）：<input id="insuranceMax" type="number" value="25299" /></label>
+      <label>公积金基数上限 (元)（默认：杭州）：<input id="housingMax" type="number" value="40694" /></label>
+      <details style="margin: 10px 0;">
+        <summary style="cursor: pointer; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 6px; user-select: none;">📋 五险一金比例设置（点击展开）</summary>
+        <div style="padding: 10px 0 0 10px;">
+          <label>养老保险比例 (%)：<input id="pensionRate" type="number" step="0.1" value="8" /></label>
+          <label>医疗保险比例 (%)：<input id="medicalRate" type="number" step="0.1" value="2" /></label>
+          <label>失业保险比例 (%)：<input id="unemploymentRate" type="number" step="0.1" value="0.5" /></label>
+          <label>公积金比例 (%)：<input id="housingRate" type="number" step="0.1" value="12" /></label>
+          <label>医保个人账户比例 (%)：<input id="medicalAccountRate" type="number" step="0.1" value="2" /></label>
+        </div>
+      </details>
+      <button id="calculate">🚀 计算</button>
+    </div>
+
+    <div id="results" style="display: none;">
+      <div class="results">
+        <div class="result-card">
+          <h3>合并计税（年终奖并入综合所得）</h3>
+          <div id="combinedTable"></div>
+        </div>
+        <div class="result-card">
+          <h3>分开计税（年终奖单独计税）</h3>
+          <div id="separateTable"></div>
+        </div>
+      </div>
+      <div class="summary">
+        <h3>年度汇总</h3>
+        <div class="summary-grid" id="summary"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  
+  // 个人所得税税率表（2024年）
+  const taxBrackets = [
+    { min: 0, max: 36000, rate: 0.03, deduction: 0 },
+    { min: 36000, max: 144000, rate: 0.10, deduction: 2520 },
+    { min: 144000, max: 300000, rate: 0.20, deduction: 16920 },
+    { min: 300000, max: 420000, rate: 0.25, deduction: 31920 },
+    { min: 420000, max: 660000, rate: 0.30, deduction: 52920 },
+    { min: 660000, max: 960000, rate: 0.35, deduction: 85920 },
+    { min: 960000, max: Infinity, rate: 0.45, deduction: 181920 }
+  ];
+  
+  // 年终奖单独计税税率表
+  const bonusTaxBrackets = [
+    { min: 0, max: 3000, rate: 0.03, deduction: 0 },
+    { min: 3000, max: 12000, rate: 0.10, deduction: 210 },
+    { min: 12000, max: 25000, rate: 0.20, deduction: 1410 },
+    { min: 25000, max: 35000, rate: 0.25, deduction: 2660 },
+    { min: 35000, max: 55000, rate: 0.30, deduction: 4410 },
+    { min: 55000, max: 80000, rate: 0.35, deduction: 7160 },
+    { min: 80000, max: Infinity, rate: 0.45, deduction: 15160 }
+  ];
+  
+  function calculateTax(income) {
+    for (const bracket of taxBrackets) {
+      if (income > bracket.min && income <= bracket.max) {
+        return income * bracket.rate - bracket.deduction;
+      }
+    }
+    return 0;
+  }
+  
+  function calculateBonusTax(bonus) {
+    const monthlyBonus = bonus / 12;
+    for (const bracket of bonusTaxBrackets) {
+      if (monthlyBonus > bracket.min && monthlyBonus <= bracket.max) {
+        return bonus * bracket.rate - bracket.deduction * 12;
+      }
+    }
+    return 0;
+  }
+  
+  function formatMoney(amount) {
+    return amount.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  
+  // 添加专项扣除行
+  function addSpecialDeductionRow() {
+    const tbody = $('specialDeductionBody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td style="padding: 8px;">
+        <select class="deduction-type" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+          <option value="monthly">每月</option>
+          <option value="yearly">每年</option>
+        </select>
+      </td>
+      <td style="padding: 8px;">
+        <input type="number" class="deduction-amount" value="0" step="0.01" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" />
+      </td>
+      <td style="padding: 8px; text-align: center;">
+        <button type="button" class="remove-row" style="padding: 4px 12px; background: #f56565; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">- 删除</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+    
+    // 绑定删除按钮
+    row.querySelector('.remove-row').addEventListener('click', () => {
+      row.remove();
+    });
+  }
+  
+  // 初始化：添加一行
+  addSpecialDeductionRow();
+  
+  // 添加按钮事件
+  $('addSpecialDeduction').addEventListener('click', addSpecialDeductionRow);
+  
+  // 计算专项扣除总额
+  function calculateSpecialDeduction() {
+    const rows = $('specialDeductionBody').querySelectorAll('tr');
+    let total = 0;
+    rows.forEach(row => {
+      const type = row.querySelector('.deduction-type').value;
+      const amount = Number(row.querySelector('.deduction-amount').value) || 0;
+      if (type === 'monthly') {
+        total += amount * 12; // 每月乘以12
+      } else {
+        total += amount; // 每年直接相加
+      }
+    });
+    return total;
+  }
+  
+  $('calculate').addEventListener('click', () => {
+    const monthlySalary = Number($('monthlySalary').value) || 0;
+    const bonus = Number($('bonus').value) || 0;
+    const bonusMonth = Number($('bonusMonth').value);
+    const specialDeduction = calculateSpecialDeduction(); // 计算专项扣除总额
+    const monthlySpecialDeduction = specialDeduction / 12; // 每月专项扣除
+    
+    // 五险一金基数（统一使用一个基数）
+    const insuranceBaseRaw = Number($('insuranceBase').value) || monthlySalary;
+    const insuranceMax = Number($('insuranceMax').value) || 25299;
+    const housingMax = Number($('housingMax').value) || 40694;
+    
+    // 应用上限：五险基数不能超过上限，公积金基数不能超过上限
+    const insuranceBase = Math.min(insuranceBaseRaw, insuranceMax);
+    const housingBase = Math.min(insuranceBaseRaw, housingMax);
+    
+    // 五险一金比例
+    const pensionRate = Number($('pensionRate').value) / 100 || 0.08;
+    const medicalRate = Number($('medicalRate').value) / 100 || 0.02;
+    const unemploymentRate = Number($('unemploymentRate').value) / 100 || 0.005;
+    const housingRate = Number($('housingRate').value) / 100 || 0.12;
+    const medicalAccountRate = Number($('medicalAccountRate').value) / 100 || 0.02;
+    
+    // 计算每月扣除（统一使用insuranceBase作为五险基数）
+    const monthlyPension = insuranceBase * pensionRate;
+    const monthlyMedical = insuranceBase * medicalRate;
+    const monthlyUnemployment = insuranceBase * unemploymentRate;
+    const monthlyHousing = housingBase * housingRate;
+    const monthlyMedicalAccount = insuranceBase * medicalAccountRate; // 医保个人账户
+    const monthlyHousingAccount = housingBase * housingRate * 2; // 公积金账户（个人+公司）
+    const monthlyFiveInsurance = monthlyPension + monthlyMedical + monthlyUnemployment; // 五险（不含工伤、生育，因为个人不缴费）
+    const monthlyDeduction = monthlyPension + monthlyMedical + monthlyUnemployment + monthlyHousing;
+    
+    // 年度扣除总额
+    const annualDeduction = monthlyDeduction * 12;
+    const annualMedicalAccount = monthlyMedicalAccount * 12;
+    const annualHousing = monthlyHousingAccount * 12; // 公积金账户总额（个人+公司）
+    
+    // 合并计税计算
+    const combinedAnnualIncome = monthlySalary * 12 + bonus;
+    const combinedTaxableIncome = combinedAnnualIncome - annualDeduction - 60000 - specialDeduction; // 6万基本扣除 + 专项扣除
+    const combinedTax = combinedTaxableIncome > 0 ? calculateTax(combinedTaxableIncome) : 0;
+    const combinedNetIncome = combinedAnnualIncome - annualDeduction - combinedTax;
+    
+    // 分开计税计算
+    const separateAnnualIncome = monthlySalary * 12;
+    const separateTaxableIncome = separateAnnualIncome - annualDeduction - 60000 - specialDeduction;
+    const separateTax = separateTaxableIncome > 0 ? calculateTax(separateTaxableIncome) : 0;
+    const bonusTax = calculateBonusTax(bonus);
+    const separateNetIncome = separateAnnualIncome - annualDeduction - separateTax + bonus - bonusTax;
+    
+    // 获取税率
+    function getTaxRate(income) {
+      for (const bracket of taxBrackets) {
+        if (income > bracket.min && income <= bracket.max) {
+          return (bracket.rate * 100).toFixed(1) + '%';
+        }
+      }
+      return '0%';
+    }
+    
+    function getBonusTaxRate(bonus) {
+      const monthlyBonus = bonus / 12;
+      for (const bracket of bonusTaxBrackets) {
+        if (monthlyBonus > bracket.min && monthlyBonus <= bracket.max) {
+          return (bracket.rate * 100).toFixed(1) + '%';
+        }
+      }
+      return '0%';
+    }
+    
+    // 生成月度表格
+    function generateMonthlyTable(isCombined) {
+      let html = '<table><thead><tr><th>月份</th><th>月薪</th><th>五险</th><th>一金</th><th>个税(税率)</th><th>累计计税数额</th><th>实发工资</th><th>医保账户</th><th>公积金账户</th></tr></thead><tbody>';
+      
+      let totalTax = 0;
+      let totalNet = 0;
+      
+      for (let month = 1; month <= 12; month++) {
+        let currentMonthSalary = monthlySalary;
+        let monthBonus = 0;
+        let monthTax = 0;
+        
+        if (month === bonusMonth) {
+          monthBonus = bonus;
+        }
+        
+        // 累计预扣法计算个税
+        let cumulativeIncome = 0;
+        let cumulativeDeduction = 0;
+        let cumulativeTax = 0;
+        let prevCumulativeTax = 0;
+        
+        if (isCombined) {
+          // 合并计税：年终奖并入当月
+          for (let m = 1; m <= month; m++) {
+            cumulativeIncome += currentMonthSalary;
+            if (m === bonusMonth) {
+              cumulativeIncome += bonus;
+            }
+            cumulativeDeduction += monthlyDeduction + 5000 + monthlySpecialDeduction; // 每月5000基本扣除 + 专项扣除
+          }
+          
+          if (month > 1) {
+            // 计算上个月累计税
+            let prevCumIncome = 0;
+            let prevCumDeduction = 0;
+            for (let m = 1; m < month; m++) {
+              prevCumIncome += currentMonthSalary;
+              if (m === bonusMonth) {
+                prevCumIncome += bonus;
+              }
+              prevCumDeduction += monthlyDeduction + 5000 + monthlySpecialDeduction;
+            }
+            const prevTaxable = prevCumIncome - prevCumDeduction;
+            prevCumulativeTax = prevTaxable > 0 ? calculateTax(prevTaxable) : 0;
+          }
+          
+          const cumulativeTaxable = cumulativeIncome - cumulativeDeduction;
+          cumulativeTax = cumulativeTaxable > 0 ? calculateTax(cumulativeTaxable) : 0;
+          monthTax = cumulativeTax - prevCumulativeTax;
+        } else {
+          // 分开计税：年终奖单独计税
+          if (month === bonusMonth) {
+            // 年终奖月份，月薪的个税单独计算
+            cumulativeIncome = currentMonthSalary * month;
+            cumulativeDeduction = (monthlyDeduction + 5000 + monthlySpecialDeduction) * month;
+            const cumulativeTaxable = cumulativeIncome - cumulativeDeduction;
+            cumulativeTax = cumulativeTaxable > 0 ? calculateTax(cumulativeTaxable) : 0;
+            
+            if (month > 1) {
+              const prevIncome = currentMonthSalary * (month - 1);
+              const prevDeduction = (monthlyDeduction + 5000 + monthlySpecialDeduction) * (month - 1);
+              const prevTaxable = prevIncome - prevDeduction;
+              prevCumulativeTax = prevTaxable > 0 ? calculateTax(prevTaxable) : 0;
+            }
+            monthTax = cumulativeTax - prevCumulativeTax;
+          } else {
+            cumulativeIncome = currentMonthSalary * month;
+            cumulativeDeduction = (monthlyDeduction + 5000 + monthlySpecialDeduction) * month;
+            const cumulativeTaxable = cumulativeIncome - cumulativeDeduction;
+            cumulativeTax = cumulativeTaxable > 0 ? calculateTax(cumulativeTaxable) : 0;
+            
+            if (month > 1) {
+              const prevIncome = currentMonthSalary * (month - 1);
+              const prevDeduction = (monthlyDeduction + 5000 + monthlySpecialDeduction) * (month - 1);
+              const prevTaxable = prevIncome - prevDeduction;
+              prevCumulativeTax = prevTaxable > 0 ? calculateTax(prevTaxable) : 0;
+            }
+            monthTax = cumulativeTax - prevCumulativeTax;
+          }
+        }
+        
+        // 计算累计计税数额（月薪部分）
+        let cumulativeTaxable = 0;
+        if (isCombined) {
+          cumulativeTaxable = cumulativeIncome - cumulativeDeduction;
+        } else {
+          cumulativeTaxable = (currentMonthSalary * month) - ((monthlyDeduction + 5000 + monthlySpecialDeduction) * month);
+        }
+        
+        // 获取当前税率
+        let taxRateText = '';
+        if (isCombined) {
+          taxRateText = getTaxRate(cumulativeTaxable);
+        } else {
+          taxRateText = getTaxRate(cumulativeTaxable);
+        }
+        
+        // 合并计税时，需要拆分月薪和年终奖的个税
+        let salaryTax = monthTax;
+        let bonusTax = 0;
+        let bonusTaxRateText = '';
+        
+        if (isCombined && month === bonusMonth && monthBonus > 0) {
+          // 计算不含年终奖的累计个税
+          let incomeWithoutBonus = 0;
+          let deductionWithoutBonus = 0;
+          for (let m = 1; m <= month; m++) {
+            incomeWithoutBonus += currentMonthSalary;
+            deductionWithoutBonus += monthlyDeduction + 5000 + monthlySpecialDeduction;
+          }
+          const taxableWithoutBonus = incomeWithoutBonus - deductionWithoutBonus;
+          const taxWithoutBonus = taxableWithoutBonus > 0 ? calculateTax(taxableWithoutBonus) : 0;
+          
+          // 计算不含年终奖的上月累计个税
+          let prevTaxWithoutBonus = 0;
+          if (month > 1) {
+            let prevIncome = 0;
+            let prevDeduction = 0;
+            for (let m = 1; m < month; m++) {
+              prevIncome += currentMonthSalary;
+              prevDeduction += monthlyDeduction + 5000 + monthlySpecialDeduction;
+            }
+            const prevTaxable = prevIncome - prevDeduction;
+            prevTaxWithoutBonus = prevTaxable > 0 ? calculateTax(prevTaxable) : 0;
+          }
+          
+          // 不含年终奖的当月个税
+          const monthTaxWithoutBonus = taxWithoutBonus - prevTaxWithoutBonus;
+          
+          // 年终奖带来的个税增量 = 含年终奖的当月个税 - 不含年终奖的当月个税
+          bonusTax = monthTax - monthTaxWithoutBonus;
+          // 月薪对应的个税 = 不含年终奖的当月个税
+          salaryTax = monthTaxWithoutBonus;
+          bonusTaxRateText = getTaxRate(cumulativeTaxable);
+        }
+        
+        const monthNet = currentMonthSalary - monthlyDeduction - salaryTax;
+        totalTax += monthTax; // 这里加的是当月总个税（包含年终奖）
+        totalNet += monthNet;
+        
+        // 月薪行
+        html += `<tr>
+          <td>${month}月</td>
+          <td>${formatMoney(currentMonthSalary)}</td>
+          <td>${formatMoney(monthlyFiveInsurance)}</td>
+          <td>${formatMoney(monthlyHousing)}</td>
+          <td>${formatMoney(salaryTax)} (${taxRateText})</td>
+          <td>${formatMoney(cumulativeTaxable)}</td>
+          <td><strong>${formatMoney(monthNet)}</strong></td>
+          <td>${formatMoney(monthlyMedicalAccount)}</td>
+          <td>${formatMoney(monthlyHousingAccount)}</td>
+        </tr>`;
+        
+        // 年终奖单独一行（如果有）
+        if (month === bonusMonth && monthBonus > 0) {
+          if (!isCombined) {
+            // 分开计税时，年终奖单独计税
+            bonusTax = calculateBonusTax(bonus);
+            bonusTaxRateText = getBonusTaxRate(bonus);
+            totalTax += bonusTax;
+            totalNet += bonus - bonusTax;
+          } else {
+            // 合并计税时，bonusTax已经在上面计算了
+            totalNet += monthBonus - bonusTax;
+          }
+          
+          html += `<tr style="background: #fff5e6;">
+            <td>${month}月-年终奖</td>
+            <td>${formatMoney(monthBonus)}</td>
+            <td>-</td>
+            <td>-</td>
+            <td>${formatMoney(bonusTax)} (${bonusTaxRateText})</td>
+            <td>-</td>
+            <td><strong>${formatMoney(monthBonus - bonusTax)}</strong></td>
+            <td>-</td>
+            <td>-</td>
+          </tr>`;
+        }
+      }
+      
+      html += '</tbody></table>';
+      return html;
+    }
+    
+    $('combinedTable').innerHTML = generateMonthlyTable(true);
+    $('separateTable').innerHTML = generateMonthlyTable(false);
+    
+    // 生成汇总
+    const summaryHtml = `
+      <div class="summary-item">
+        <strong>合并计税年度税后收入</strong>
+        <span>${formatMoney(combinedNetIncome)}</span>
+      </div>
+      <div class="summary-item">
+        <strong>分开计税年度税后收入</strong>
+        <span>${formatMoney(separateNetIncome)}</span>
+      </div>
+      <div class="summary-item">
+        <strong>合并计税年度个税</strong>
+        <span>${formatMoney(combinedTax)}</span>
+      </div>
+      <div class="summary-item">
+        <strong>分开计税年度个税</strong>
+        <span>${formatMoney(separateTax + bonusTax)}</span>
+      </div>
+      <div class="summary-item">
+        <strong>年度医保账户总额</strong>
+        <span>${formatMoney(annualMedicalAccount)}</span>
+      </div>
+      <div class="summary-item">
+        <strong>年度公积金账户总额</strong>
+        <span>${formatMoney(annualHousing)}</span>
+      </div>
+      <div class="summary-item">
+        <strong>最优方案</strong>
+        <span>${combinedNetIncome > separateNetIncome ? '合并计税' : '分开计税'}</span>
+      </div>
+      <div class="summary-item">
+        <strong>最优方案节省</strong>
+        <span>${formatMoney(Math.abs(combinedNetIncome - separateNetIncome))}</span>
+      </div>
+    `;
+    
+    $('summary').innerHTML = summaryHtml;
+    $('results').style.display = 'block';
+  });
+  
+  // 初始计算
+  setTimeout(() => { $('calculate').click(); }, 200);
+})();
+</script>
+</body>
+</html>
+
