@@ -164,14 +164,74 @@
     font-weight: 600;
   }
   @media (max-width: 768px) {
+    body {
+      padding: 10px;
+    }
     .container {
-      padding: 20px;
+      padding: 16px;
+      border-radius: 12px;
     }
     h2 {
-      font-size: 22px;
+      font-size: 20px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
     }
     .controls {
       grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 16px;
+    }
+    label {
+      font-size: 13px;
+    }
+    input, select {
+      font-size: 16px; /* 防止iOS自动缩放 */
+      padding: 12px;
+    }
+    button {
+      font-size: 14px;
+      padding: 14px 20px;
+      width: 100%;
+    }
+    #chart {
+      height: 300px;
+      margin-bottom: 16px;
+    }
+    table {
+      font-size: 13px;
+    }
+    th, td {
+      padding: 10px 8px;
+    }
+    .small {
+      font-size: 11px;
+      padding: 10px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    body {
+      padding: 8px;
+    }
+    .container {
+      padding: 12px;
+    }
+    h2 {
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+    .controls {
+      padding: 12px;
+      gap: 10px;
+    }
+    #chart {
+      height: 250px;
+    }
+    table {
+      font-size: 12px;
+    }
+    th, td {
+      padding: 8px 6px;
     }
   }
 </style>
@@ -230,8 +290,11 @@
   }
 
   function drawChart(rows){
+    // 检测移动端
+    const isMobile = window.innerWidth <= 768;
+    
     // 简单折线图：x = withdraw, y = years (capped)
-    const padding = 50; // 增加padding为Y轴标签留空间
+    const padding = isMobile ? 45 : 50; // 移动端减少padding
     const w = canvas.clientWidth || 800;
     const h = canvas.clientHeight || 400;
     // 使用高DPI渲染，但避免过度缩放
@@ -264,11 +327,13 @@
     ctx.stroke();
 
     // X轴标签
-    ctx.fillStyle = '#2d3748'; ctx.font = 'bold 13px sans-serif'; ctx.textAlign='center';
+    const axisFontSize = isMobile ? '11px' : '13px';
+    ctx.fillStyle = '#2d3748'; ctx.font = 'bold ' + axisFontSize + ' sans-serif'; ctx.textAlign='center';
     ctx.fillText('每年提款金额 (元)', w / 2, h - 5);
     
     // ticks and labels
-    ctx.fillStyle = '#4a5568'; ctx.font = '13px sans-serif'; ctx.textAlign='center';
+    const fontSize = isMobile ? '11px' : '13px';
+    ctx.fillStyle = '#4a5568'; ctx.font = fontSize + ' sans-serif'; ctx.textAlign='center';
     const xTicks = 5; // 改为5个间隔，共6个点
     for(let i=0;i<=xTicks;i++){
       const x = padding + (w-2*padding)*(i/xTicks);
@@ -279,9 +344,9 @@
     
     // Y轴标签
     ctx.save();
-    ctx.translate(15, h / 2);
+    ctx.translate(isMobile ? 12 : 15, h / 2);
     ctx.rotate(-Math.PI / 2);
-    ctx.fillStyle = '#2d3748'; ctx.font = 'bold 13px sans-serif'; ctx.textAlign='center';
+    ctx.fillStyle = '#2d3748'; ctx.font = 'bold ' + axisFontSize + ' sans-serif'; ctx.textAlign='center';
     ctx.fillText('可持续年数 (年)', 0, 0);
     ctx.restore();
     
@@ -324,7 +389,9 @@
     });
     
     // 智能显示标签：只显示关键点，避免重叠
-    const labelInterval = Math.max(1, Math.floor(validRows.length / 8)); // 大约显示8个标签
+    // 移动端显示更少的标签
+    const maxLabels = isMobile ? 5 : 8;
+    const labelInterval = Math.max(1, Math.floor(validRows.length / maxLabels));
     const labelPositions = [];
     
     validRows.forEach((pt, index)=>{
@@ -346,10 +413,11 @@
       const yearText = isFinite(pt.years) ? pt.years.toFixed(0) : '≥1000';
       const fullText = yearText + '年';
       
-      ctx.font = '12px sans-serif';
+      // 移动端使用更小的字体
+      ctx.font = isMobile ? '10px sans-serif' : '12px sans-serif';
       const textWidth = ctx.measureText(fullText).width;
-      const labelPadding = 6;
-      const labelHeight = 18;
+      const labelPadding = isMobile ? 4 : 6;
+      const labelHeight = isMobile ? 16 : 18;
       
       // 智能决定标签位置：优先上方，如果太靠上则下方
       let labelY = y - 12;
@@ -386,7 +454,7 @@
       ctx.fillStyle = '#667eea';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.font = 'bold 11px sans-serif';
+      ctx.font = isMobile ? 'bold 10px sans-serif' : 'bold 11px sans-serif';
       ctx.fillText(fullText, x, labelY);
     });
   }
