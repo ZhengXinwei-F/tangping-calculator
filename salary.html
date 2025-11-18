@@ -91,6 +91,13 @@
   #specialDeductionTable tbody tr:last-child {
     border-bottom: none;
   }
+  #specialDeductionTable {
+    font-size: 13px;
+  }
+  #specialDeductionTable th,
+  #specialDeductionTable td {
+    padding: 8px 6px;
+  }
   .results {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -190,16 +197,116 @@
     }
     h2 {
       font-size: 20px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
     }
     .input-section {
       grid-template-columns: 1fr;
       padding: 16px;
+      gap: 12px;
+    }
+    label {
+      font-size: 13px;
+    }
+    input, select {
+      font-size: 16px; /* 防止iOS自动缩放 */
+      padding: 12px;
+    }
+    button {
+      font-size: 14px;
+      padding: 14px 20px;
+      width: 100%;
     }
     .results {
       grid-template-columns: 1fr;
+      gap: 16px;
     }
-    input, select {
-      font-size: 16px;
+    table {
+      font-size: 12px;
+    }
+    th, td {
+      padding: 8px 6px;
+    }
+    /* 专项扣除表格移动端优化 */
+    #specialDeductionTable {
+      font-size: 11px;
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    #specialDeductionTable thead,
+    #specialDeductionTable tbody,
+    #specialDeductionTable tr {
+      display: block;
+    }
+    #specialDeductionTable thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+    #specialDeductionTable tbody tr {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      padding: 8px;
+      background: white;
+    }
+    #specialDeductionTable tbody td {
+      display: block;
+      border: none;
+      padding: 6px 0;
+      text-align: left;
+      position: relative;
+      padding-left: 30%;
+    }
+    #specialDeductionTable tbody td:before {
+      content: attr(data-label);
+      position: absolute;
+      left: 0;
+      width: 28%;
+      font-weight: 600;
+      color: #4a5568;
+      font-size: 11px;
+    }
+    #specialDeductionTable tbody td:last-child {
+      text-align: center;
+      padding-left: 0;
+    }
+    #specialDeductionTable tbody td:last-child:before {
+      display: none;
+    }
+    #addSpecialDeduction {
+      width: 100%;
+      margin-top: 12px;
+    }
+    .summary-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    body {
+      padding: 8px;
+    }
+    .container {
+      padding: 12px;
+    }
+    h2 {
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+    .input-section {
+      padding: 12px;
+      gap: 10px;
+    }
+    table {
+      font-size: 11px;
+    }
+    th, td {
+      padding: 6px 4px;
+    }
+    #specialDeductionTable {
+      font-size: 10px;
     }
   }
 </style>
@@ -316,16 +423,16 @@
     const tbody = $('specialDeductionBody');
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td style="padding: 8px;">
+      <td data-label="类型" style="padding: 8px;">
         <select class="deduction-type" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
           <option value="monthly">每月</option>
           <option value="yearly">每年</option>
         </select>
       </td>
-      <td style="padding: 8px;">
+      <td data-label="金额" style="padding: 8px;">
         <input type="number" class="deduction-amount" value="0" step="0.01" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" />
       </td>
-      <td style="padding: 8px; text-align: center;">
+      <td data-label="操作" style="padding: 8px; text-align: center;">
         <button type="button" class="remove-row" style="padding: 4px 12px; background: #f56565; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">- 删除</button>
       </td>
     `;
