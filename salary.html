@@ -668,6 +668,8 @@
         } else {
           cumulativeTaxable = (currentMonthSalary * month) - ((monthlyDeduction + 5000 + monthlySpecialDeduction) * month);
         }
+        // 累计计税数额不能小于0
+        cumulativeTaxable = Math.max(0, cumulativeTaxable);
         
         // 获取当前税率
         let taxRateText = '';
