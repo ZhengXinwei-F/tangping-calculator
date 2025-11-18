@@ -15,7 +15,7 @@
     color: #333;
   }
   .container {
-    max-width: 1400px;
+    max-width: 1600px;
     margin: 0 auto;
     background: white;
     border-radius: 16px;
@@ -128,35 +128,58 @@
     padding-bottom: 12px;
     border-bottom: 2px solid #667eea;
   }
+  .result-card > div {
+    width: 100%;
+    overflow-x: auto;
+  }
   table {
     border-collapse: collapse;
     width: 100%;
+    max-width: 100%;
     background: white;
-    font-size: 13px;
+    font-size: 11px;
     border-radius: 8px;
     overflow: hidden;
+    table-layout: fixed;
   }
   thead {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
   }
   th {
-    padding: 12px;
+    padding: 8px 6px;
     text-align: right;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   th:first-child {
     text-align: left;
+    width: 8%;
   }
+  th:nth-child(2) { width: 12%; } /* 月薪 */
+  th:nth-child(3) { width: 10%; } /* 五险 */
+  th:nth-child(4) { width: 10%; } /* 一金 */
+  th:nth-child(5) { width: 14%; } /* 个税(税率) */
+  th:nth-child(6) { width: 14%; } /* 累计计税数额 */
+  th:nth-child(7) { width: 12%; } /* 实发工资 */
+  th:nth-child(8) { width: 10%; } /* 医保账户 */
+  th:nth-child(9) { width: 10%; } /* 公积金账户 */
   tbody tr {
     border-bottom: 1px solid #e2e8f0;
+    height: auto;
   }
   tbody tr:nth-child(even) {
     background: #f9fafb;
   }
   tbody tr:hover {
     background: #f0f4f8;
+  }
+  tbody tr[style*="background"] {
+    height: auto;
+    line-height: normal;
   }
   /* 桌面端月份列背景色 */
   .result-card table tbody td:first-child {
@@ -165,14 +188,21 @@
     font-weight: 700;
   }
   td {
-    padding: 10px 12px;
+    padding: 8px 6px;
     text-align: right;
     color: #4a5568;
+    font-size: 11px;
+    vertical-align: middle;
+    line-height: 1.4;
+    white-space: nowrap;
   }
   td:first-child {
     text-align: left;
     font-weight: 600;
     color: #2d3748;
+  }
+  th {
+    white-space: nowrap;
   }
   .summary {
     margin-top: 24px;
@@ -273,37 +303,36 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     .result-card table tbody td {
-      display: block;
+      display: flex;
+      flex-direction: row;
       border: none;
-      padding: 6px 0;
+      padding: 10px 0;
       text-align: left;
-      position: relative;
-      padding-left: 35%;
       font-size: 12px;
+      min-height: 36px;
+      align-items: center;
     }
     .result-card table tbody td:before {
       content: attr(data-label);
-      position: absolute;
-      left: 0;
-      width: 33%;
       font-weight: 600;
       color: #4a5568;
       font-size: 11px;
+      min-width: 100px;
+      flex-shrink: 0;
+      margin-right: 12px;
     }
     .result-card table tbody td:first-child {
       font-weight: 700;
       font-size: 13px;
-      color: #667eea;
-      padding-bottom: 8px;
-      margin-bottom: 4px;
-      border-bottom: 1px solid #e2e8f0;
-      padding-left: 0;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      border-radius: 6px;
-      padding: 8px 12px;
+      padding: 10px 12px;
       margin: -10px -10px 8px -10px;
       width: calc(100% + 20px);
+      min-height: auto;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 6px;
+      display: block;
+      text-align: center;
     }
     .result-card table tbody td:first-child:before {
       display: none;
@@ -681,18 +710,14 @@
         if (isCombined) {
           cumulativeTaxable = cumulativeIncome - cumulativeDeduction;
         } else {
-          cumulativeTaxable = (currentMonthSalary * month) - ((monthlyDeduction + 5000 + monthlySpecialDeduction) * month);
+          // 分开计税时，累计计税数额的计算方式与合并计税保持一致
+          cumulativeTaxable = cumulativeIncome - cumulativeDeduction;
         }
         // 累计计税数额不能小于0
         cumulativeTaxable = Math.max(0, cumulativeTaxable);
         
         // 获取当前税率
-        let taxRateText = '';
-        if (isCombined) {
-          taxRateText = getTaxRate(cumulativeTaxable);
-        } else {
-          taxRateText = getTaxRate(cumulativeTaxable);
-        }
+        let taxRateText = getTaxRate(cumulativeTaxable);
         
         // 合并计税时，需要拆分月薪和年终奖的个税
         let salaryTax = monthTax;
@@ -738,16 +763,16 @@
         totalNet += monthNet;
         
         // 月薪行
-        html += `<tr>
-          <td data-label="月份">${month}月</td>
-          <td data-label="月薪">${formatMoney(currentMonthSalary)}</td>
-          <td data-label="五险">${formatMoney(monthlyFiveInsurance)}</td>
-          <td data-label="一金">${formatMoney(monthlyHousing)}</td>
-          <td data-label="个税(税率)">${formatMoney(salaryTax)} (${taxRateText})</td>
-          <td data-label="累计计税数额">${formatMoney(cumulativeTaxable)}</td>
-          <td data-label="实发工资"><strong>${formatMoney(monthNet)}</strong></td>
-          <td data-label="医保账户">${formatMoney(monthlyMedicalAccount)}</td>
-          <td data-label="公积金账户">${formatMoney(monthlyHousingAccount)}</td>
+        html += `<tr style="height: auto; line-height: 1.4;">
+          <td data-label="月份" style="padding: 8px 6px;">${month}月</td>
+          <td data-label="月薪" style="padding: 8px 6px;">${formatMoney(currentMonthSalary)}</td>
+          <td data-label="五险" style="padding: 8px 6px;">${formatMoney(monthlyFiveInsurance)}</td>
+          <td data-label="一金" style="padding: 8px 6px;">${formatMoney(monthlyHousing)}</td>
+          <td data-label="个税(税率)" style="padding: 8px 6px;">${formatMoney(salaryTax)} (${taxRateText})</td>
+          <td data-label="累计计税数额" style="padding: 8px 6px;">${formatMoney(cumulativeTaxable)}</td>
+          <td data-label="实发工资" style="padding: 8px 6px;"><strong>${formatMoney(monthNet)}</strong></td>
+          <td data-label="医保账户" style="padding: 8px 6px;">${formatMoney(monthlyMedicalAccount)}</td>
+          <td data-label="公积金账户" style="padding: 8px 6px;">${formatMoney(monthlyHousingAccount)}</td>
         </tr>`;
         
         // 年终奖单独一行（如果有）
@@ -763,16 +788,16 @@
             totalNet += monthBonus - bonusTax;
           }
           
-          html += `<tr style="background: #fff5e6;">
-            <td data-label="月份">${month}月-年终奖</td>
-            <td data-label="年终奖">${formatMoney(monthBonus)}</td>
-            <td data-label="五险">-</td>
-            <td data-label="一金">-</td>
-            <td data-label="个税(税率)">${formatMoney(bonusTax)} (${bonusTaxRateText})</td>
-            <td data-label="累计计税数额">-</td>
-            <td data-label="实发工资"><strong>${formatMoney(monthBonus - bonusTax)}</strong></td>
-            <td data-label="医保账户">-</td>
-            <td data-label="公积金账户">-</td>
+          html += `<tr style="background: #fff5e6; height: auto; line-height: 1.4;">
+            <td data-label="月份" style="padding: 8px 6px;">${month}月-年终奖</td>
+            <td data-label="年终奖" style="padding: 8px 6px;">${formatMoney(monthBonus)}</td>
+            <td data-label="五险" style="padding: 8px 6px;">-</td>
+            <td data-label="一金" style="padding: 8px 6px;">-</td>
+            <td data-label="个税(税率)" style="padding: 8px 6px;">${formatMoney(bonusTax)} (${bonusTaxRateText})</td>
+            <td data-label="累计计税数额" style="padding: 8px 6px;">-</td>
+            <td data-label="实发工资" style="padding: 8px 6px;"><strong>${formatMoney(monthBonus - bonusTax)}</strong></td>
+            <td data-label="医保账户" style="padding: 8px 6px;">-</td>
+            <td data-label="公积金账户" style="padding: 8px 6px;">-</td>
           </tr>`;
         }
       }
