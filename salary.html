@@ -810,6 +810,10 @@
     $('separateTable').innerHTML = generateMonthlyTable(false);
     
     // 生成汇总
+    // 税后+公积金到账总额（视为实际到手）
+    const combinedActualIncome = combinedNetIncome + annualHousing;
+    const separateActualIncome = separateNetIncome + annualHousing;
+
     const summaryHtml = `
       <div class="summary-item">
         <strong>合并计税年度税后收入</strong>
@@ -818,6 +822,14 @@
       <div class="summary-item">
         <strong>分开计税年度税后收入</strong>
         <span>${formatMoney(separateNetIncome)}</span>
+      </div>
+      <div class="summary-item">
+        <strong>合并计税实际到手(税后+公积金)</strong>
+        <span>${formatMoney(combinedActualIncome)}</span>
+      </div>
+      <div class="summary-item">
+        <strong>分开计税实际到手(税后+公积金)</strong>
+        <span>${formatMoney(separateActualIncome)}</span>
       </div>
       <div class="summary-item">
         <strong>合并计税年度个税</strong>
