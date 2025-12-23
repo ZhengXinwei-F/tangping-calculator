@@ -813,6 +813,10 @@
     // 税后+公积金到账总额（视为实际到手）
     const combinedActualIncome = combinedNetIncome + annualHousing;
     const separateActualIncome = separateNetIncome + annualHousing;
+    const isCombinedBetter = combinedActualIncome >= separateActualIncome;
+    const bestActualIncome = isCombinedBetter ? combinedActualIncome : separateActualIncome;
+    const bestPlanText = isCombinedBetter ? '合并计税' : '分开计税';
+    // 仅展示最优方案及其到手（不展示另一方案信息）
 
     const summaryHtml = `
       <div class="summary-item">
@@ -822,14 +826,6 @@
       <div class="summary-item">
         <strong>分开计税年度税后收入</strong>
         <span>${formatMoney(separateNetIncome)}</span>
-      </div>
-      <div class="summary-item">
-        <strong>合并计税实际到手(税后+公积金)</strong>
-        <span>${formatMoney(combinedActualIncome)}</span>
-      </div>
-      <div class="summary-item">
-        <strong>分开计税实际到手(税后+公积金)</strong>
-        <span>${formatMoney(separateActualIncome)}</span>
       </div>
       <div class="summary-item">
         <strong>合并计税年度个税</strong>
@@ -848,12 +844,8 @@
         <span>${formatMoney(annualHousing)}</span>
       </div>
       <div class="summary-item highlight">
-        <strong>最优方案</strong>
-        <span>${combinedNetIncome > separateNetIncome ? '合并计税' : '分开计税'}</span>
-      </div>
-      <div class="summary-item highlight">
-        <strong>最优方案节省</strong>
-        <span>${formatMoney(Math.abs(combinedNetIncome - separateNetIncome))}</span>
+        <strong>最优实际到手(税后+公积金)</strong>
+        <span>${bestPlanText}：${formatMoney(bestActualIncome)}</span>
       </div>
     `;
     
